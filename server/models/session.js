@@ -35,6 +35,7 @@ class Sessions extends Model {
   get(options) {
     return super.get.call(this, options)
       .then(session => {
+        console.log('RETURNED A SESSION IN SESSION.JS');
         if (!session || !session.userId) {
           return session;
         }
@@ -50,10 +51,10 @@ class Sessions extends Model {
    * @returns {Promise<Object>} A promise that is fulfilled with the results of
    * an insert query or rejected with the error that occured.
    */
-  create({ userId }) {
+  create(id) {
     let data = utils.createRandom32String();
     let hash = utils.createHash(data);
-    return super.create.call(this, { hash, userId });
+    return super.create.call(this, { hash, userId: id });
   }
 }
 

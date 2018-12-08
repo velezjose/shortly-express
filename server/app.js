@@ -15,8 +15,9 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-app.use(Auth.isLoggedIn);
 app.use(cookieParser);
+
+app.use(Auth.isLoggedIn);
 
 
 app.get('/', (req, res) => {
@@ -123,7 +124,7 @@ app.post('/login', (req, res, next) => {
         // res.location('/');
         console.log(`Logged in as ${username}. Correct password.`);
         debugger;
-        models.Sessions.create({ userId: result.id })
+        models.Sessions.create(result.id)
           .then(() => {
             res.location('/');
             console.log('SUCCESS: Session created');

@@ -1,3 +1,5 @@
+const Auth = require('./auth');
+
 const parseHelper = (cookie) => {
   let assembled = {};
 
@@ -13,12 +15,15 @@ const parseHelper = (cookie) => {
 };
 
 const parseCookies = (req, res, next) => {
-  if (req.headers.Cookie === undefined) {
-    req.headers.Cookie = {};
+  console.log('REQUEST.HEADERS: ', req.headers, '\nREQUEST.HEADERS.COOKIE: ', req.headers.cookie);
+  if (req.headers.cookie === undefined) {
+    req.cookies = {};
+    Auth.createSession(req, res, next);
   } else {
-    req.headers.Cookie = parseHelper(req.headers.Cookie);
+    req.cookies = parseHelper(req.headers.cookie);
+    console.log('PARSED COOKIE: ', req.cookies);
+    next();
   }
-  next();
 };
 
 
