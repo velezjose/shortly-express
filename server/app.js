@@ -14,21 +14,26 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+app.use(Auth.isLoggedIn);
 
 
-
-app.get('/', 
-(req, res) => {
+app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
-(req, res) => {
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+app.get('/signup', (req, res) => {
+  res.render('signup');
+});
+
+app.get('/create', (req, res) => {
   res.render('index');
 });
 
-app.get('/links', 
-(req, res, next) => {
+app.get('/links', (req, res, next) => {
   models.Links.getAll()
     .then(links => {
       res.status(200).send(links);
@@ -38,8 +43,7 @@ app.get('/links',
     });
 });
 
-app.post('/links', 
-(req, res, next) => {
+app.post('/links', (req, res, next) => {
   var url = req.body.url;
   if (!models.Links.isValidUrl(url)) {
     // send back a 404 if link is not valid
@@ -78,7 +82,51 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 
+app.post('/signup', (req, res, next) => {
+  let username = req.body.username;
+  let password = req.body.password;
+  models.Users.get({ username })
+    .then(userInfo => {
+      if (userInfo === undefined) {
+        models.Users.create({ username, password })
+          .then(user => {
+            console.log(`Create ${username} succeeded.`);
+            res.location('/');
+            res.send();
+          })
+          .catch(() => {
+            res.render('signup');
+            console.log('Create failed. Redirected to Signup.');
+            res.send();
+          });
+      } else {
+        res.location('/signup');
+        console.log('Username taken. Redirected to Signup.');
+        res.send();
+      }
+    })
+    .catch(err => console.log('ERROR: ', err));
+});
 
+app.post('/login', (req, res, next) => {
+  let username = req.body.username;
+  let attempted = req.body.password;
+
+  models.Users.get({ username })
+    .then((result) => {
+      debugger;
+      if (result !== undefined && utils.compareHash(attempted, result.password, result.salt)) {
+        res.location('/');
+        console.log(`Logged in as ${username}. Correct password.`);
+        res.send();
+      } else {
+        res.location('/login');
+        console.log('Wrong password. Redirected to Login.');
+        res.send();
+      }
+    })
+    .catch(err => console.log('ERROR in app.post to login. '));
+});
 
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
