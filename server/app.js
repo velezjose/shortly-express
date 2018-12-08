@@ -14,7 +14,7 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-app.use(Auth.isLoggedIn);
+// app.use(Auth.isLoggedIn);
 
 
 app.get('/', (req, res) => {
@@ -95,7 +95,7 @@ app.post('/signup', (req, res, next) => {
             res.send();
           })
           .catch(() => {
-            res.render('signup');
+            res.location('/signup');
             console.log('Create failed. Redirected to Signup.');
             res.send();
           });
@@ -116,9 +116,19 @@ app.post('/login', (req, res, next) => {
     .then((result) => {
       debugger;
       if (result !== undefined && utils.compareHash(attempted, result.password, result.salt)) {
-        res.location('/');
+        // res.location('/');
         console.log(`Logged in as ${username}. Correct password.`);
-        res.send();
+        models.Sessions.create({ id: result.id })
+          .then(() => {
+            res.location('/');
+            console.log('SUCCESS: Session created');
+            res.send();
+          })
+          .catch(() => {
+            res.location('/login');
+            console.log('Session creation failed. Redirected to login.');
+            res.send();
+          });
       } else {
         res.location('/login');
         console.log('Wrong password. Redirected to Login.');

@@ -9,6 +9,6 @@ module.exports.createSession = (req, res, next) => {
 // Add additional authentication middleware functions below
 /************************************************************/
 
-// module.exports.isLoggedIn = () = {
-//   false;
-// };
+module.exports.isLoggedIn = () => {
+  return true;
+};
