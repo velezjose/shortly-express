@@ -5,6 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const cookieParser = require('./middleware/cookieParser');
 
 const app = express();
 
@@ -14,7 +15,8 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
-// app.use(Auth.isLoggedIn);
+app.use(Auth.isLoggedIn);
+app.use(cookieParser);
 
 
 app.get('/', (req, res) => {
@@ -85,6 +87,7 @@ app.post('/links', (req, res, next) => {
 app.post('/signup', (req, res, next) => {
   let username = req.body.username;
   let password = req.body.password;
+  debugger;
   models.Users.get({ username })
     .then(userInfo => {
       if (userInfo === undefined) {
@@ -92,6 +95,7 @@ app.post('/signup', (req, res, next) => {
           .then(user => {
             console.log(`Create ${username} succeeded.`);
             res.location('/');
+            res.render('index');
             res.send();
           })
           .catch(() => {
@@ -114,11 +118,12 @@ app.post('/login', (req, res, next) => {
 
   models.Users.get({ username })
     .then((result) => {
-      debugger;
+      //debugger;
       if (result !== undefined && utils.compareHash(attempted, result.password, result.salt)) {
         // res.location('/');
         console.log(`Logged in as ${username}. Correct password.`);
-        models.Sessions.create({ id: result.id })
+        debugger;
+        models.Sessions.create({ userId: result.id })
           .then(() => {
             res.location('/');
             console.log('SUCCESS: Session created');

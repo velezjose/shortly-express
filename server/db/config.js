@@ -19,7 +19,8 @@ module.exports = (db) => {
       return db.queryAsync(`
         CREATE TABLE IF NOT EXISTS clicks (
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-          linkId INT
+          linkId INT,
+          FOREIGN KEY (linkId) REFERENCES links(id)
         );`);
     })
     .then(() => {
@@ -38,7 +39,8 @@ module.exports = (db) => {
         CREATE TABLE IF NOT EXISTS sessions (
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
           hash VARCHAR(64),
-          userId INT
+          userId INT,
+          FOREIGN KEY (userId) REFERENCES users(id)
         )`);
     })
     .error(err => {

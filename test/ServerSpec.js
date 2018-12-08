@@ -66,7 +66,6 @@ describe('', function () {
       var queryString = 'SELECT * FROM users';
       db.query(queryString, function (err, results) {
         if (err) { return done(err); }
-
         expect(results).to.deep.equal([]);
         done();
       });
