@@ -15,15 +15,11 @@ const parseHelper = (cookie) => {
 };
 
 const parseCookies = (req, res, next) => {
-  console.log('REQUEST.HEADERS: ', req.headers, '\nREQUEST.HEADERS.COOKIE: ', req.headers.cookie);
-  if (req.headers.cookie === undefined) {
-    req.cookies = {};
-    Auth.createSession(req, res, next);
-  } else {
+  console.log('this is our cookie ', req.headers.cookie);
+  if (req.headers.cookie !== undefined) {
     req.cookies = parseHelper(req.headers.cookie);
-    console.log('PARSED COOKIE: ', req.cookies);
-    next();
   }
+  next();
 };
 
 

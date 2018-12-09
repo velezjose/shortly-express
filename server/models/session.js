@@ -35,7 +35,6 @@ class Sessions extends Model {
   get(options) {
     return super.get.call(this, options)
       .then(session => {
-        console.log('RETURNED A SESSION IN SESSION.JS');
         if (!session || !session.userId) {
           return session;
         }

@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(cookieParser);
+app.use(Auth.createSession);
 
 app.use(Auth.isLoggedIn);
 
@@ -123,7 +124,6 @@ app.post('/login', (req, res, next) => {
       if (result !== undefined && utils.compareHash(attempted, result.password, result.salt)) {
         // res.location('/');
         console.log(`Logged in as ${username}. Correct password.`);
-        debugger;
         models.Sessions.create(result.id)
           .then(() => {
             res.location('/');
